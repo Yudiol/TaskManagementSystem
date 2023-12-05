@@ -21,8 +21,8 @@ public class AuthController {
 
     @PostMapping
     @Operation(summary = "Создание пользователя")
-    public void create(@RequestBody UserRequestDto userRequestDto){
-authService.save(userRequestDto);
+    public void register(@RequestBody UserRequestDto userRequestDto) {
+        authService.save(userRequestDto);
     }
 
 }

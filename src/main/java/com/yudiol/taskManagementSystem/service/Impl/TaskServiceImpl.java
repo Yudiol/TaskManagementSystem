@@ -28,4 +28,9 @@ public class TaskServiceImpl implements TaskService {
         System.out.println(task);
         return taskRepository.save(task).getTaskId();
     }
+
+    @Override
+    public Task findByTaskId(Long taskId) {
+        return taskRepository.findByTaskId(taskId).orElseThrow();
+    }
 }

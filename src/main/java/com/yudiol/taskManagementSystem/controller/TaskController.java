@@ -1,10 +1,13 @@
 package com.yudiol.taskManagementSystem.controller;
 
 import com.yudiol.taskManagementSystem.dto.TaskRequestDto;
+import com.yudiol.taskManagementSystem.model.Task;
 import com.yudiol.taskManagementSystem.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +24,14 @@ public class TaskController {
 
     @PostMapping
     @Operation(summary = "Создание Task")
-    public void create(@RequestBody TaskRequestDto taskRequestDto) {
+    public void createTask(@RequestBody TaskRequestDto taskRequestDto) {
+        System.out.println(taskRequestDto);
         taskService.save(taskRequestDto);
+    }
+
+    @GetMapping("/{taskId}")
+    @Operation(summary = "Создание Task")
+    public Task getTask(@PathVariable("taskId") Long taskId) {
+        return taskService.findByTaskId(taskId);
     }
 }
