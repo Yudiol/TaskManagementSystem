@@ -47,14 +47,14 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @OneToMany(mappedBy = "authorTask")
-    private List<Task> createdTasksList;
+//    @OneToMany(mappedBy = "author_id")
+//    private List<Task> createdTasksList;
 
     @OneToMany(mappedBy = "authorComment")
     private List<Comment> commentsList;
 
-    @OneToMany(mappedBy = "performer")
-    private List<Task> performTasksList;
+//    @OneToMany(mappedBy = "performer_id")
+//    private List<Task> performTasksList;
 
     @OneToMany(mappedBy = "owner")
     private Set<Authority> permissions;
