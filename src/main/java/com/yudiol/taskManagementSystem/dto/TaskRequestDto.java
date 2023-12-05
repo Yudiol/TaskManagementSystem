@@ -30,9 +30,10 @@ public class TaskRequestDto {
 
     @Schema(description = "Статус выполнения задачи", example = "В процессе")
     private TaskStatus status;
+
     @Schema(description = "Приоритет выполнения задачи", example = "Высокий")
     private Priority priority;
 
-    @Schema(description = "Исполнитель", example = "2")
-    private Long performer;
+    @Schema(description = "Исполнитель", example = "1")
+    private Long performerId;
 }

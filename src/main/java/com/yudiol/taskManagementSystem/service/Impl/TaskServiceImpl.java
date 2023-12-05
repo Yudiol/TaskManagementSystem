@@ -20,10 +20,9 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     @Transactional
-    public Long save(TaskRequestDto taskRequestDto) {
+    public Long save(Long userId,TaskRequestDto taskRequestDto) {
         Task task = taskMapper.toTask(taskRequestDto);
-        task.setAuthorId(2L);
-        task.setPerformerId(2L);
+        task.setAuthorId(userId);
         task.setDateRegistration(LocalDateTime.now());
         System.out.println(task);
         return taskRepository.save(task).getTaskId();

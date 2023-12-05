@@ -24,14 +24,15 @@ public class TaskController {
 
     @PostMapping
     @Operation(summary = "Создание Task")
-    public void createTask(@RequestBody TaskRequestDto taskRequestDto) {
+    public void create(@RequestBody TaskRequestDto taskRequestDto) {
         System.out.println(taskRequestDto);
-        taskService.save(taskRequestDto);
+
+        taskService.save(3L,taskRequestDto);
     }
 
     @GetMapping("/{taskId}")
     @Operation(summary = "Создание Task")
-    public Task getTask(@PathVariable("taskId") Long taskId) {
+    public Task get(@PathVariable("taskId") Long taskId) {
         return taskService.findByTaskId(taskId);
     }
 }

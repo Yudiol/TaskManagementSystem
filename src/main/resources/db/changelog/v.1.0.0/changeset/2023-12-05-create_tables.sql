@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS comments
 (
     comment_id         bigint                NOT NULL GENERATED ALWAYS AS IDENTITY,
     user_id            bigint                NOT NULL,
-    task_id            bigint                NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    task_id            bigint                NOT NULL REFERENCES tasks(task_id) ON DELETE CASCADE,
     date_registration  timestamp             NOT NULL,
     description        varchar               NOT NULL
 );

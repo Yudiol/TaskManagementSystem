@@ -4,7 +4,7 @@ import com.yudiol.taskManagementSystem.dto.TaskRequestDto;
 import com.yudiol.taskManagementSystem.model.Task;
 
 public interface TaskService {
-    Long save(TaskRequestDto taskRequestDto);
+    Long save(Long userId,TaskRequestDto taskRequestDto);
 
     Task findByTaskId(Long taskId);
 }

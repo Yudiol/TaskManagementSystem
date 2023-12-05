@@ -50,8 +50,8 @@ public class User {
 //    @OneToMany(mappedBy = "author_id")
 //    private List<Task> createdTasksList;
 
-    @OneToMany(mappedBy = "authorComment")
-    private List<Comment> commentsList;
+//    @OneToMany(mappedBy = "authorComment")
+//    private List<Comment> commentsList;
 
 //    @OneToMany(mappedBy = "performer_id")
 //    private List<Task> performTasksList;
