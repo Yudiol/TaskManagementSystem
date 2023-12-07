@@ -17,7 +17,7 @@ import static com.yudiol.taskManagementSystem.util.ValidationMessage.INCORRECT_L
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskRequestDto {
+public class TaskCreateRequestDto {
 
 
     @Size(max = 250, message = INCORRECT_LENGTH_NAME)

@@ -1,6 +1,7 @@
-package com.yudiol.taskManagementSystem.Mapper;
+package com.yudiol.taskManagementSystem.mapper;
 
 import com.yudiol.taskManagementSystem.dto.CommentRequestDto;
+import com.yudiol.taskManagementSystem.dto.CommentWithAuthorFullNameResponseDto;
 import com.yudiol.taskManagementSystem.model.Comment;
 import org.mapstruct.Mapper;
 
@@ -8,4 +9,6 @@ import org.mapstruct.Mapper;
 public interface CommentMapper {
 
     Comment toComment(CommentRequestDto commentRequestDto);
+
+    CommentWithAuthorFullNameResponseDto toCommentWithAuthorFullNameResponseDto(Comment comment);
 }

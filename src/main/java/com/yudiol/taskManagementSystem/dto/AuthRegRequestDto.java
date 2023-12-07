@@ -23,7 +23,7 @@ import static com.yudiol.taskManagementSystem.util.ValidationMessage.NOT_SPACES_
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequestDto {
+public class AuthRegRequestDto {
 
     @Pattern(message = "Поле 'Имя'" + INCORRECT_SYMBOL, regexp = "^[a-zA-Zа-яА-Я]{0,250}$")
     @Size(max = 250, message = INCORRECT_LENGTH_NAME)

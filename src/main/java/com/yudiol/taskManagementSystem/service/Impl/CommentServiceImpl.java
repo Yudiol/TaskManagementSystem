@@ -1,7 +1,7 @@
 package com.yudiol.taskManagementSystem.service.Impl;
 
-import com.yudiol.taskManagementSystem.Mapper.CommentMapper;
 import com.yudiol.taskManagementSystem.dto.CommentRequestDto;
+import com.yudiol.taskManagementSystem.mapper.CommentMapper;
 import com.yudiol.taskManagementSystem.model.Comment;
 import com.yudiol.taskManagementSystem.repository.CommentRepository;
 import com.yudiol.taskManagementSystem.service.CommentService;
@@ -25,5 +25,14 @@ public class CommentServiceImpl implements CommentService {
         comment.setUserId(userId);
         comment.setDateRegistration(LocalDateTime.now());
         return commentRepository.save(comment);
+    }
+
+    @Override
+    public Comment findById(Long commentId) {
+        return commentRepository.findById(commentId).orElseThrow();
+    }
+    @Transactional
+    public void deleteById(Long commentId) {
+        commentRepository.deleteById(commentId);
     }
 }
