@@ -13,12 +13,19 @@ import java.time.LocalDateTime;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentWithAuthorFullNameResponseDto {
+public class CommentDto {
+
     private Long commentId;
-//    private UserFullNameResponseDto author;
+
+    private Long taskId;
+
     private Long authorId;
+
     private String authorName;
+
     private String authorSurname;
+
     private String description;
+
     private LocalDateTime dateRegistration;
 }

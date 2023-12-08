@@ -1,6 +1,5 @@
 package com.yudiol.taskManagementSystem.controller;
 
-import com.yudiol.taskManagementSystem.dto.FilterDto;
 import com.yudiol.taskManagementSystem.dto.TaskChangeStatusRequestDto;
 import com.yudiol.taskManagementSystem.dto.TaskCreateRequestDto;
 import com.yudiol.taskManagementSystem.dto.TaskUpdateRequestDto;
@@ -8,7 +7,10 @@ import com.yudiol.taskManagementSystem.dto.TaskWithCommentsResponseDto;
 import com.yudiol.taskManagementSystem.security.JwtTokenUtils;
 import com.yudiol.taskManagementSystem.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -73,10 +76,28 @@ public class TaskController {
         return taskService.findAllByPerformerId(performerId);
     }
 
-    @GetMapping("with-comments/performer/{title}")
-    @Operation(summary = "Получить список задач исполнителя с комментариями по performerId")
-    public List<FilterDto> getFilterWithComments(@PathVariable("title") String title) {
-        return taskService.filter(title);
+    @GetMapping("filter")
+    @Operation(summary = "Filter")
+    public Page<TaskWithCommentsResponseDto> filter(
+            @RequestParam(name = "authorName", defaultValue = "", required = false) String authorName,
+            @RequestParam(name = "authorSurname", defaultValue = "", required = false) String authorSurname,
+            @RequestParam(name = "performerName", defaultValue = "", required = false) String performerName,
+            @RequestParam(name = "performerSurname", defaultValue = "", required = false) String performerSurname,
+            @RequestParam(name = "startDate", defaultValue = "2000-01-01T00:00:00", required = false)
+            @Schema(description = "Время начала поиска", example = "2000-01-01T00:00:00")
+//            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    String startDate
+            ,
+            @RequestParam(name = "endDate", defaultValue = "3000-01-01T00:00:00", required = false)
+            @Schema(description = "Время конца поиска", example = "3000-01-01T00:00:00")
+//            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    String endDate,
+            @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "20", required = false) Integer limit
+
+
+    ) {
+        return taskService.filter(PageRequest.of(offset, limit), authorName, authorSurname, performerName, performerSurname, startDate, endDate);
     }
 
     @GetMapping("with-comments")

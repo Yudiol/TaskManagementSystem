@@ -1,5 +1,6 @@
 package com.yudiol.taskManagementSystem.mapper;
 
+import com.yudiol.taskManagementSystem.dto.FilterDto;
 import com.yudiol.taskManagementSystem.dto.TaskCreateRequestDto;
 import com.yudiol.taskManagementSystem.dto.TaskUpdateRequestDto;
 import com.yudiol.taskManagementSystem.dto.TaskWithCommentsResponseDto;
@@ -13,4 +14,8 @@ public interface TaskMapper {
     Task toTask(TaskUpdateRequestDto taskRequestDto);
 
     TaskWithCommentsResponseDto toTaskResponseDto(Task task);
+
+    TaskWithCommentsResponseDto toTaskResponseDto(FilterDto filter);
+
+
 }

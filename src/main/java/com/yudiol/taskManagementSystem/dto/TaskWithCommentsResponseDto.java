@@ -23,8 +23,14 @@ public class TaskWithCommentsResponseDto {
     private String description;
     private TaskStatus status;
     private Priority priority;
-    private UserFullNameResponseDto author;
-    private UserFullNameResponseDto performer;
+    private Long authorId;
+    private String authorName;
+    private String authorSurname;
+    private Long performerId;
+    private String performerName;
+    private String performerSurname;
+//    private UserFullNameResponseDto author;
+//    private UserFullNameResponseDto performer;
     private LocalDateTime dateRegistration;
     private List<CommentWithAuthorFullNameResponseDto> comments;
 }

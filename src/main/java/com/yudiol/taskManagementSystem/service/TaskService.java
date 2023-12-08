@@ -5,6 +5,9 @@ import com.yudiol.taskManagementSystem.dto.TaskChangeStatusRequestDto;
 import com.yudiol.taskManagementSystem.dto.TaskCreateRequestDto;
 import com.yudiol.taskManagementSystem.dto.TaskUpdateRequestDto;
 import com.yudiol.taskManagementSystem.dto.TaskWithCommentsResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
@@ -22,5 +25,6 @@ public interface TaskService {
     List<TaskWithCommentsResponseDto> findAll();
 
     void changeStatus(Long taskId, TaskChangeStatusRequestDto taskChangeStatusRequestDto);
-    List<FilterDto> filter(String title);
+
+    Page<TaskWithCommentsResponseDto> filter(Pageable pageable, String authorName, String authorSurname, String performerName, String performerSurname, String startDate, String endDate);
 }
