@@ -1,16 +1,17 @@
 package com.yudiol.taskManagementSystem.service.Impl;
 
 import com.yudiol.taskManagementSystem.dto.CommentWithAuthorFullNameResponseDto;
-import com.yudiol.taskManagementSystem.dto.FilterDto;
+import com.yudiol.taskManagementSystem.dto.IdResponseDto;
 import com.yudiol.taskManagementSystem.dto.TaskChangeStatusRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskCreateRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskUpdateRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskWithCommentsResponseDto;
-import com.yudiol.taskManagementSystem.mapper.CommentMapper;
+import com.yudiol.taskManagementSystem.dto.TaskDto;
+import com.yudiol.taskManagementSystem.dto.TaskRequestDto;
+import com.yudiol.taskManagementSystem.dto.TaskResponseDto;
+import com.yudiol.taskManagementSystem.exception.errors.BadRequestError;
+import com.yudiol.taskManagementSystem.exception.errors.NotFoundException;
 import com.yudiol.taskManagementSystem.mapper.TaskMapper;
-import com.yudiol.taskManagementSystem.mapper.UserMapper;
+import com.yudiol.taskManagementSystem.model.Priority;
 import com.yudiol.taskManagementSystem.model.Task;
-import com.yudiol.taskManagementSystem.repository.CommentRepository;
+import com.yudiol.taskManagementSystem.model.TaskStatus;
 import com.yudiol.taskManagementSystem.repository.TaskRepository;
 import com.yudiol.taskManagementSystem.repository.UserRepository;
 import com.yudiol.taskManagementSystem.service.CommentService;
@@ -32,141 +33,116 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskMapper taskMapper;
     private final TaskRepository taskRepository;
-    private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
     private final CommentService commentService;
 
     @Transactional
-    public Long save(Long userId, TaskCreateRequestDto taskRequestDto) {
+    public IdResponseDto save(Long userId, TaskRequestDto taskRequestDto) {
+
+        userRepository.findById(taskRequestDto.getPerformerId()).orElseThrow(() -> new NotFoundException("Проверьте поле 'performerId' исполнитель", String.valueOf(userId)));
+
         Task task = taskMapper.toTask(taskRequestDto);
+
+        task.setStatus(checkTaskStatus(taskRequestDto.getTaskStatus()));
+        task.setPriority(checkTaskPriority(taskRequestDto.getTaskPriority()));
         task.setAuthorId(userId);
         task.setDateRegistration(LocalDateTime.now());
-        return taskRepository.save(task).getTaskId();
+        return new IdResponseDto(taskRepository.save(task).getTaskId());
     }
+
 
     @Transactional
-    public void update(Long userId, TaskUpdateRequestDto task) {
-//        Task task = taskMapper.toTask(taskRequestDto);
-//        task.setAuthorId(userId);
-//        task.setDateRegistration(LocalDateTime.now());
-        taskRepository.update(task.getTitle(), task.getDescription(), task.getStatus(), task.getPriority(), userId);
+    public void update(Long taskId, TaskRequestDto task) {
+
+        userRepository.findById(task.getPerformerId()).orElseThrow(() ->
+                new NotFoundException("Проверьте поле 'performerId' исполнитель", String.valueOf(taskId)));
+
+        taskRepository.update(task.getTitle(), task.getDescription(), checkTaskStatus(task.getTaskStatus()), checkTaskPriority(task.getTaskPriority()), task.getPerformerId(), taskId);
     }
 
-    @Override
-    public TaskWithCommentsResponseDto findByTaskId(Long taskId) {
-        return null;
-    }
-
-    @Override
-    public List<TaskWithCommentsResponseDto> findAllByPerformerId(Long performerId) {
-        return null;
-    }
-
-    @Override
-    public List<TaskWithCommentsResponseDto> findAllByAuthorId(Long authorId) {
-        return null;
-    }
-
-    @Override
-    public List<TaskWithCommentsResponseDto> findAll() {
-        return null;
-    }
 
     @Transactional
-    public void changeStatus(Long taskId, TaskChangeStatusRequestDto taskChangeStatusRequestDto) {
-        taskRepository.changeStatus(taskId, taskChangeStatusRequestDto.getStatus());
+    public void delete(Long taskId) {
+
+        taskRepository.deleteByTaskId(taskId);
     }
 
 
-//    public TaskWithCommentsResponseDto findByTaskId(Long taskId) {
-//        Task task = taskRepository.findByTaskId(taskId).orElseThrow();
-//        return getTaskWithCommentsResponseDto(task);
-//    }
-//
-//    public List<TaskWithCommentsResponseDto> findAll() {
-//        return taskRepository.findAll().stream().map(this::getTaskWithCommentsResponseDto).collect(Collectors.toList());
-//    }
-//
-//    public List<TaskWithCommentsResponseDto> findAllByAuthorId(Long authorId) {
-//        return taskRepository.findAllByAuthorId(authorId).stream().map(this::getTaskWithCommentsResponseDto).collect(Collectors.toList());
-//    }
-//
-//    public List<TaskWithCommentsResponseDto> findAllByPerformerId(Long performerId) {
-//        return taskRepository.findAllByPerformerId(performerId).stream().map(this::getTaskWithCommentsResponseDto).collect(Collectors.toList());
-//    }
+    public TaskResponseDto findByTaskId(Long taskId, Boolean withComments) {
 
-    public Page<TaskWithCommentsResponseDto> filter(Pageable pageable, String authorName, String authorSurname, String performerName, String performerSurname, String start, String end) {
-//        System.out.println(authorName);
-//        System.out.println(authorSurname);
-//        System.out.println(performerName);
-//        System.out.println(performerSurname);
-//        System.out.println(startDate);
-//        System.out.println(endDate);/
-        LocalDateTime startDate = LocalDateTime.parse(start);
-        LocalDateTime endDate = LocalDateTime.parse(end);
+        TaskResponseDto task = taskRepository.findTaskByTaskId(taskId).map(taskMapper::toTaskResponseDto)
+                .orElseThrow(() -> new NotFoundException("Задача", String.valueOf(taskId)));
+        if (withComments) {
+            Map<Long, List<CommentWithAuthorFullNameResponseDto>> map = commentService.getListCommentsByListIds(List.of(taskId));
+            task.setComments(map.get(taskId));
+        }
+        return task;
+    }
 
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("fieldName").ascending());
 
-//        Page<Comment> commentPage = commentRepository.findAllByTaskIdInArr(ids, pageable);
-        Page<FilterDto> commentPage = userRepository.filter(pageable, authorName, authorSurname, performerName, performerSurname, startDate, endDate);
-        List<Long> listTaskIds = commentPage.getContent().stream().map(FilterDto::getTaskId).toList();
-        Boolean withComments = true;
+    @Transactional
+    public void changeStatus(Long taskId, TaskChangeStatusRequestDto task) {
 
-        Page<TaskWithCommentsResponseDto> taskResponseDto = commentPage.map(taskMapper::toTaskResponseDto);
+        taskRepository.changeStatus(taskId, checkTaskStatus(task.getTaskStatus()));
+    }
 
+
+    public Page<TaskResponseDto> findAllByAuthorId(Pageable pageable, Long authorId, Boolean withComments) {
+        Page<TaskDto> commentPage = taskRepository.findAllByAuthorId(pageable, authorId);
+        return getTasks(commentPage, withComments);
+    }
+
+
+    public Page<TaskResponseDto> findAllByPerformerId(Pageable pageable, Long performerId, Boolean withComments) {
+        Page<TaskDto> commentPage = taskRepository.findAllByPerformerId(pageable, performerId);
+        return getTasks(commentPage, withComments);
+    }
+
+
+    public Page<TaskResponseDto> filter(Pageable pageable, String authorName, String authorSurname, String performerName, String performerSurname, LocalDateTime startDate, LocalDateTime endDate, Boolean withComments) {
+        Page<TaskDto> commentPage = userRepository.filter(pageable, authorName, authorSurname, performerName, performerSurname, startDate, endDate);
+        return getTasks(commentPage, withComments);
+
+    }
+
+
+    private Page<TaskResponseDto> getTasks(Page<TaskDto> commentPage, Boolean withComments) {
+        List<Long> listTaskIds = commentPage.getContent().stream().map(TaskDto::getTaskId).toList();
+        Page<TaskResponseDto> taskResponseDto = commentPage.map(taskMapper::toTaskResponseDto);
         if (withComments) {
             return getComments(taskResponseDto, listTaskIds);
-
         } else {
             return taskResponseDto;
         }
     }
 
 
-    private Page<TaskWithCommentsResponseDto> getComments(Page page, List<Long> ids) {
+    private Page<TaskResponseDto> getComments(Page<TaskResponseDto> page, List<Long> ids) {
         Map<Long, List<CommentWithAuthorFullNameResponseDto>> map = commentService.getListCommentsByListIds(ids);
-
         return page.map(taskResponseDto -> {
-            TaskWithCommentsResponseDto taskWithCommentsResponseDto = (TaskWithCommentsResponseDto) taskResponseDto;
-            List<CommentWithAuthorFullNameResponseDto> comments = map.get(((TaskWithCommentsResponseDto) taskResponseDto).getTaskId());
-            taskWithCommentsResponseDto.setComments(comments);
-            return taskWithCommentsResponseDto;
+            List<CommentWithAuthorFullNameResponseDto> comments = map.get((taskResponseDto).getTaskId());
+            taskResponseDto.setComments(comments);
+            return taskResponseDto;
         });
     }
 
-//    private TaskWithCommentsResponseDto getTaskWithCommentsResponseDto(Task task) {
-//        TaskWithCommentsResponseDto taskResponseDto = taskMapper.toTaskResponseDto(task);
-//
-//        User userAuthor = userRepository.findById(task.getAuthorId()).orElseThrow();
-//        User userPerformer = userRepository.findById(task.getPerformerId()).orElseThrow();
-//
-//        UserFullNameResponseDto author = userMapper.toUserForTaskResponseDto(userAuthor);
-//        UserFullNameResponseDto performer = userMapper.toUserForTaskResponseDto(userPerformer);
-//
-//        List<CommentWithAuthorFullNameResponseDto> comments = getCommentWithAuthorFullNameResponseDto(
-//                commentRepository.findAllByTaskId(task.getTaskId()));
-//
-//        taskResponseDto.setAuthor(author);
-//        taskResponseDto.setPerformer(performer);
-//        taskResponseDto.setComments(comments);
-//
-//        System.out.println(commentService.getListCommentsByListIds(Arrays.asList(4L,5L, 6L, 7L)));
-//        return taskResponseDto;
-//    }
-//
-//    private List<CommentWithAuthorFullNameResponseDto> getCommentWithAuthorFullNameResponseDto(List<Comment> commentList) {
-//        List<CommentWithAuthorFullNameResponseDto> comments = new ArrayList<>();
-//        User userAuthor;
-//        UserFullNameResponseDto author;
-//        for (Comment comment : commentList) {
-//            userAuthor = userRepository.findById(comment.getUserId()).orElseThrow();
-//            author = userMapper.toUserForTaskResponseDto(userAuthor);
-//            CommentWithAuthorFullNameResponseDto commentDto = commentMapper.toCommentWithAuthorFullNameResponseDto(comment);
-//            commentDto.setAuthor(author);
-//            comments.add(commentDto);
-//        }
-//        return comments;
-//    }
+
+    private TaskStatus checkTaskStatus(String taskStatus) {
+        for (TaskStatus status : TaskStatus.values()) {
+            if (status.getStatus().equals(taskStatus)) {
+                return status;
+            }
+        }
+        throw new BadRequestError("Проверьте поле 'taskStatus' такого статуса не существует");
+    }
+
+
+    private Priority checkTaskPriority(String taskPriority) {
+        for (Priority priority : Priority.values()) {
+            if (priority.getPriority().equals(taskPriority)) {
+                return priority;
+            }
+        }
+        throw new BadRequestError("Проверьте поле 'taskPriority' такого приоритета не существует");
+    }
 }

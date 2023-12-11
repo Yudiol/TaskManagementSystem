@@ -1,5 +1,6 @@
 package com.yudiol.taskManagementSystem.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,9 @@ import java.time.LocalDateTime;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "Сущность \"Комментария\" response с ФИО пользователя")
 public class CommentWithAuthorFullNameResponseDto {
     private Long commentId;
-//    private UserFullNameResponseDto author;
     private Long authorId;
     private String authorName;
     private String authorSurname;

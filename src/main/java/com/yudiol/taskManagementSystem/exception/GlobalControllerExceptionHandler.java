@@ -3,8 +3,9 @@ package com.yudiol.taskManagementSystem.exception;
 
 import com.yudiol.taskManagementSystem.exception.errors.BadRequestError;
 import com.yudiol.taskManagementSystem.exception.errors.EmailExistError;
+import com.yudiol.taskManagementSystem.exception.errors.ForbiddenError;
 import com.yudiol.taskManagementSystem.exception.errors.NotFoundException;
-import com.yudiol.taskManagementSystem.exception.errors.UnconfirmedAccountError;
+import com.yudiol.taskManagementSystem.exception.errors.UnauthorizedError;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-import static com.yudiol.taskManagementSystem.util.ValidationMessage.INCORRECT_JSON_OBJECT;
+import static com.yudiol.taskManagementSystem.util.validate.ValidationMessage.DUPLICATE_EMAIL;
+import static com.yudiol.taskManagementSystem.util.validate.ValidationMessage.INCORRECT_JSON_OBJECT;
 
 
 @RestControllerAdvice
@@ -43,18 +45,23 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ApiError> handleForbiddenError(ForbiddenError e) {
+        return getResponseError(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleUnauthorizedError(UnauthorizedError e) {
+        return getResponseError(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
     private ResponseEntity<ApiError> handelNotFoundException(NotFoundException e) {
         return getResponseError(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     private ResponseEntity<ApiError> handelUserEmailException(EmailExistError e) {
-        return getResponseError(e.getMessage(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<ApiError> handelUserEmailException(UnconfirmedAccountError e) {
-        return getResponseError(e.getMessage(), HttpStatus.FORBIDDEN);
+        return getResponseError(DUPLICATE_EMAIL, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler

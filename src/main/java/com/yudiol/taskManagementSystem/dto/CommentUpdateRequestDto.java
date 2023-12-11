@@ -12,9 +12,9 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentRequestDto {
+@Schema(description = "Сущность обновления комментария")
+public class CommentUpdateRequestDto {
 
-    private Long taskId;
-    @Schema(description = "Комментарий", example = "Я бы сделал по другому)")
+    @Schema(description = "Комментарий", example = "Получилось очень хорошо)")
     private String description;
 }

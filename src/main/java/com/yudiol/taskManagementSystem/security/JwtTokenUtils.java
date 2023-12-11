@@ -45,10 +45,6 @@ public class JwtTokenUtils {
         return getAllClaimsFromToken(token).get("roles", List.class);
     }
 
-    public Long getUserId(String token) {
-        return getAllClaimsFromToken(token).get("userId", Long.class);
-    }
-
     public Long getUserIdWithBearer(String token) {
         return getAllClaimsFromToken(token.substring(7)).get("userId", Long.class);
     }

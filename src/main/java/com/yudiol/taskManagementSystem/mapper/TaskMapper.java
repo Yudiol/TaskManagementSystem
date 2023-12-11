@@ -1,21 +1,18 @@
 package com.yudiol.taskManagementSystem.mapper;
 
-import com.yudiol.taskManagementSystem.dto.FilterDto;
-import com.yudiol.taskManagementSystem.dto.TaskCreateRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskUpdateRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskWithCommentsResponseDto;
+import com.yudiol.taskManagementSystem.dto.TaskDto;
+import com.yudiol.taskManagementSystem.dto.TaskRequestDto;
+import com.yudiol.taskManagementSystem.dto.TaskResponseDto;
 import com.yudiol.taskManagementSystem.model.Task;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface TaskMapper {
-    Task toTask(TaskCreateRequestDto taskRequestDto);
+    Task toTask(TaskRequestDto taskRequestDto);
 
-    Task toTask(TaskUpdateRequestDto taskRequestDto);
+//    TaskWithCommentsResponseDto toTaskResponseDto(Task task);
 
-    TaskWithCommentsResponseDto toTaskResponseDto(Task task);
-
-    TaskWithCommentsResponseDto toTaskResponseDto(FilterDto filter);
+    TaskResponseDto toTaskResponseDto(TaskDto task);
 
 
 }

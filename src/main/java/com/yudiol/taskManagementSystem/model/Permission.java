@@ -2,9 +2,7 @@ package com.yudiol.taskManagementSystem.model;
 
 public enum Permission {
     READ("READ"),
-    CREATE("CREATE"),
-    EDIT("EDIT"),
-    CHANGE_TASK_STATUS("CHANGE_TASK_STATUS");
+    CREATE("CREATE");
 
     private String permission;
 

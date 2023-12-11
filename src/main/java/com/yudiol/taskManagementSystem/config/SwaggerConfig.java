@@ -4,7 +4,6 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
@@ -18,12 +17,9 @@ public class SwaggerConfig {
                         addList("Bearer Authentication"))
                 .components(new Components().addSecuritySchemes
                         ("Bearer Authentication", createAPIKeyScheme()))
-                .info(new Info().title("My REST API")
-                        .description("Some custom description of API.")
-                        .version("1.0").contact(new Contact().name("Sallo Szrajbman")
-                                .email( "www.baeldung.com").url("salloszraj@gmail.com"))
-                        .license(new License().name("License of API")
-                                .url("API license URL")));
+                .info(new Info().title("Task Management REST API")
+                        .version("1.0.0").contact(new Contact().name("Yudin Roman")
+                                .email("Yudiol114@gmail.com")));
     }
 
     private SecurityScheme createAPIKeyScheme() {
@@ -32,21 +28,3 @@ public class SwaggerConfig {
                 .scheme("bearer");
     }
 }
-
-//public class SwaggerConfig {
-//    @Bean
-//    public OpenAPI customOpenAPI() {
-//        return new OpenAPI()
-//                .info(
-//                        new Info()
-//                                .title("Job Search Platform")
-//                                .version("1.0.0")
-//                                .contact(
-//                                        new Contact()
-//                                                .email("Yudiol114@gmail.com")
-//                                                .url("https://github.com/Yudiol")
-//                                                .name("Roman Yudin")
-//                                )
-//                );
-//    }
-//}

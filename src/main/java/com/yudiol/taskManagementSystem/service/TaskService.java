@@ -1,30 +1,29 @@
 package com.yudiol.taskManagementSystem.service;
 
-import com.yudiol.taskManagementSystem.dto.FilterDto;
+import com.yudiol.taskManagementSystem.dto.IdResponseDto;
 import com.yudiol.taskManagementSystem.dto.TaskChangeStatusRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskCreateRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskUpdateRequestDto;
-import com.yudiol.taskManagementSystem.dto.TaskWithCommentsResponseDto;
+import com.yudiol.taskManagementSystem.dto.TaskRequestDto;
+import com.yudiol.taskManagementSystem.dto.TaskResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-
-import java.util.List;
+import java.time.LocalDateTime;
 
 public interface TaskService {
-    Long save(Long userId, TaskCreateRequestDto taskRequestDto);
+    IdResponseDto save(Long userId, TaskRequestDto taskRequestDto);
 
-    void update(Long userId, TaskUpdateRequestDto taskRequestDto);
+    void update(Long userId, TaskRequestDto taskRequestDto);
 
-    TaskWithCommentsResponseDto findByTaskId(Long taskId);
+    TaskResponseDto findByTaskId(Long taskId, Boolean withComments);
 
-    List<TaskWithCommentsResponseDto> findAllByPerformerId(Long performerId);
+    Page<TaskResponseDto> findAllByPerformerId(Pageable pageable, Long performerId, Boolean withComments);
 
-    List<TaskWithCommentsResponseDto> findAllByAuthorId(Long authorId);
+    Page<TaskResponseDto> findAllByAuthorId(Pageable pageable, Long authorId, Boolean withComments);
 
-    List<TaskWithCommentsResponseDto> findAll();
+    Page<TaskResponseDto> filter(Pageable pageable, String authorName, String authorSurname,
+                                 String performerName, String performerSurname, LocalDateTime startDate, LocalDateTime endDate, Boolean withComments);
 
     void changeStatus(Long taskId, TaskChangeStatusRequestDto taskChangeStatusRequestDto);
 
-    Page<TaskWithCommentsResponseDto> filter(Pageable pageable, String authorName, String authorSurname, String performerName, String performerSurname, String startDate, String endDate);
+    void delete(Long taskId);
 }

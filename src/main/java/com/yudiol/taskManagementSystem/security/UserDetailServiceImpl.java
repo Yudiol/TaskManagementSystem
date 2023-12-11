@@ -1,6 +1,7 @@
 package com.yudiol.taskManagementSystem.security;
 
 
+import com.yudiol.taskManagementSystem.exception.errors.UnauthorizedError;
 import com.yudiol.taskManagementSystem.model.User;
 import com.yudiol.taskManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username).orElseThrow(() ->
-                new UsernameNotFoundException(String.format("UserDetailsService: пользователь с username '%s' не найден", username)));
+                new UnauthorizedError("Пользователь не аутентифицирован, если вы пытались войти в систему проверьте логин и пароль"));
         return new UserDetailsImpl(user);
     }
 }

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users
     surname           character varying(250),
     password          character varying(100) NOT NULL,
     email             character varying(250) NOT NULL UNIQUE,
+    role              int                    NOT NULL,
     date_registration date                   NOT NULL
 );
 
@@ -12,7 +13,7 @@ CREATE TABLE IF NOT EXISTS tasks
 (
     task_id           bigint                 NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     author_id         bigint                 NOT NULL REFERENCES users(user_id) ON DELETE SET NULL,
-    performer_id      bigint                 NOT NULL REFERENCES users(user_id),
+    performer_id      bigint                 NOT NULL REFERENCES users(user_id) ON DELETE SET NULL,
     title             varchar                NOT NULL,
     description       varchar ,
     status            int                    NOT NULL,

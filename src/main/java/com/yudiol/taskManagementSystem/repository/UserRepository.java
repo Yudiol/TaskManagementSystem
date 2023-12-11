@@ -1,24 +1,20 @@
 package com.yudiol.taskManagementSystem.repository;
 
-import com.yudiol.taskManagementSystem.dto.FilterDto;
+import com.yudiol.taskManagementSystem.dto.TaskDto;
 import com.yudiol.taskManagementSystem.model.User;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-
-    @Query(value = " SELECT new com.yudiol.taskManagementSystem.dto.FilterDto( " +
+    @Query(value = " SELECT new com.yudiol.taskManagementSystem.dto.TaskDto( " +
             " t.taskId AS taskId , " +
             " u.userId AS authorId , " +
             " u.name AS authorName , " +
@@ -40,5 +36,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             " AND lower(p.surname) LIKE  lower(concat('%', :performerSurname,'%')) " +
             " AND t.dateRegistration BETWEEN :startDate AND :endDate "
     )
-    Page<FilterDto> filter(Pageable pageable, String authorName, String authorSurname, String performerName, String performerSurname, LocalDateTime startDate, LocalDateTime endDate);
+    Page<TaskDto> filter(Pageable pageable, String authorName, String authorSurname, String performerName,
+                         String performerSurname, LocalDateTime startDate, LocalDateTime endDate);
 }

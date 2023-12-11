@@ -1,28 +1,22 @@
 package com.yudiol.taskManagementSystem.config;
 
 
+import com.yudiol.taskManagementSystem.security.CustomAuthenticationEntryPoint;
 import com.yudiol.taskManagementSystem.security.JwtRequestFilter;
-import com.yudiol.taskManagementSystem.security.UserDetailServiceImpl;
-
-
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,11 +24,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    private final UserDetailServiceImpl userDetailService;
+    private final UserDetailsService userDetailService;
     private final JwtRequestFilter jwtRequestFilter;
     private final PasswordEncoder passwordEncoder;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,11 +39,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-//                        .requestMatchers( "/swagger-ui/**","/v3/**","/tasks/with-comments/*","/auth/delete/*","/auth/reg","/auth/login").permitAll()
-//                        .requestMatchers("/auth/logout","/auth/reset").hasAuthority("USER")
-//                        .anyRequest().authenticated()
-                        )
+                        .requestMatchers("/swagger-ui/**", "/v3/**", "/auth/reg", "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tasks/filter", "/tasks/author/*", "/tasks/performer/*", "/tasks/*").hasAuthority("READ")
+                        .requestMatchers(HttpMethod.POST, "/tasks", "/comments").hasAuthority("CREATE")
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(auth -> auth
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
@@ -65,6 +65,4 @@ public class SecurityConfig {
         dao.setPasswordEncoder(passwordEncoder);
         return dao;
     }
-
-
 }
