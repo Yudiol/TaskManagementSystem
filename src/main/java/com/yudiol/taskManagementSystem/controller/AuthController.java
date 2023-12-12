@@ -43,7 +43,7 @@ public class AuthController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     public IdResponseDto register(@RequestBody @Valid AuthRegRequestDto userDto, BindingResult bindingResult) {
-        ErrorsValidationChecker.checkValidationErrors(bindingResult);
+//        ErrorsValidationChecker.checkValidationErrors(bindingResult);
         return authService.save(userDto);
     }
 
