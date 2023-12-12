@@ -6,7 +6,7 @@ import com.yudiol.taskManagementSystem.dto.IdResponseDto;
 
 public interface AuthService {
 
-    IdResponseDto save(AuthRegRequestDto userRequestDto);
+    void save(AuthRegRequestDto userRequestDto);
 
     AuthResponseDto createAuthToken(String username, String password);
 }

@@ -3,7 +3,6 @@ package com.yudiol.taskManagementSystem.controller;
 import com.yudiol.taskManagementSystem.dto.AuthLoginRequestDto;
 import com.yudiol.taskManagementSystem.dto.AuthRegRequestDto;
 import com.yudiol.taskManagementSystem.dto.AuthResponseDto;
-import com.yudiol.taskManagementSystem.dto.IdResponseDto;
 import com.yudiol.taskManagementSystem.exception.ApiError;
 import com.yudiol.taskManagementSystem.service.AuthService;
 import com.yudiol.taskManagementSystem.util.validate.ErrorsValidationChecker;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @ResponseStatus(HttpStatus.OK)
 @RequiredArgsConstructor
-@Tag(name="Аутентификация", description="Производит регистрацию пользователя и логин.")
+@Tag(name = "Аутентификация", description = "Производит регистрацию пользователя и логин.")
 public class AuthController {
 
     private final AuthService authService;
@@ -42,9 +41,10 @@ public class AuthController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))})
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public IdResponseDto register(@RequestBody @Valid AuthRegRequestDto userDto, BindingResult bindingResult) {
-//        ErrorsValidationChecker.checkValidationErrors(bindingResult);
-        return authService.save(userDto);
+    public AuthResponseDto register(@RequestBody @Valid AuthRegRequestDto userDto, BindingResult bindingResult) {
+        ErrorsValidationChecker.checkValidationErrors(bindingResult);
+        authService.save(userDto);
+        return authService.createAuthToken(userDto.getEmail().toLowerCase(), userDto.getPassword());
     }
 
 

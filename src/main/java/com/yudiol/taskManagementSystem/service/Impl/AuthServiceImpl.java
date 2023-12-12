@@ -2,8 +2,7 @@ package com.yudiol.taskManagementSystem.service.Impl;
 
 import com.yudiol.taskManagementSystem.dto.AuthRegRequestDto;
 import com.yudiol.taskManagementSystem.dto.AuthResponseDto;
-import com.yudiol.taskManagementSystem.dto.IdResponseDto;
-import com.yudiol.taskManagementSystem.exception.errors.UnauthorizedError;
+import com.yudiol.taskManagementSystem.exception.errors.NotFoundException;
 import com.yudiol.taskManagementSystem.mapper.UserMapper;
 import com.yudiol.taskManagementSystem.model.Role;
 import com.yudiol.taskManagementSystem.model.User;
@@ -33,19 +32,19 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public IdResponseDto save(AuthRegRequestDto userRequestDto) {
+    public void save(AuthRegRequestDto userRequestDto) {
         User user = userMapper.toUser(userRequestDto);
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setDateRegistration(LocalDate.now());
         user.setRole(Role.USER);
-        return new IdResponseDto(userRepository.save(user).getUserId());
+        userRepository.save(user);
     }
 
     @Transactional
     public AuthResponseDto createAuthToken(String username, String password) {
         User user = userRepository.findByEmail(username).orElseThrow(() ->
-                new UnauthorizedError("Пользователь не аутентифицирован, если вы пытались войти в систему проверьте логин и пароль"));
+                new NotFoundException("Пользователь ", username));
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         String token = getJwtToken(user.getUserId(), username);
         return new AuthResponseDto(user.getUserId(), token);
